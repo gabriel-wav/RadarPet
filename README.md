@@ -124,5 +124,3 @@ radar-pet/
 ├── .env
 └── requirements.txt
 ```
-
-
