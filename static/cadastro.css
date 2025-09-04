@@ -1,0 +1,268 @@
+ /* Reset básico */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Global styles */
+    /* Header */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #ffffff;
+      color: #333;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #ade6d0;
+      padding: 15px 30px;
+    }
+
+    header nav {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo img {
+      width: 60px;
+      height: 60px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 1vh;
+    }
+
+    .logo h1 {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      font-size: 45px;
+    }
+
+    nav a {
+      margin: 0 15px;
+      text-decoration: none;
+      color: #000;
+      font-weight: 500;
+    }
+
+    .actions .btn-dark {
+      background-color: #000;
+      color: #a8e6cf;
+      border: none;
+      padding: 8px 16px;
+      margin-left: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid #e0e0e0;
+      padding: 40px 80px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      font-family: Arial, sans-serif;
+    }
+
+    .footerTitulo {
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+
+    .iconsFooter {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .iconsFooter img {
+      width: 20px;
+      height: 20px;
+      opacity: 0.7;
+      cursor: pointer;
+      transition: opacity 0.3s;
+    }
+
+    .iconsFooter img:hover {
+      opacity: 1;
+    }
+
+    .anuncios {
+      display: flex;
+      gap: 60px;
+    }
+
+    .anuncios div {
+      min-width: 150px;
+    }
+
+    .anuncios div ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .anuncios div ul li {
+      margin-bottom: 10px;
+    }
+
+    .anuncios div ul li a {
+      text-decoration: none;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .anuncie-pet-perdido::before {
+      content: "Anuncie pet perdido";
+      display: block;
+      font-weight: bold;
+      margin-bottom: 15px;
+      font-size: 16px;
+      color: #000;
+    }
+
+    .anuncie-pet-encontrado::before {
+      content: "Anuncie pet encontrado";
+      display: block;
+      font-weight: bold;
+      margin-bottom: 15px;
+      font-size: 16px;
+      color: #000;
+    }
+
+    .sobre-nos::before {
+      content: "Sobre nós";
+      display: block;
+      font-weight: bold;
+      margin-bottom: 15px;
+      font-size: 16px;
+      color: #000;
+    }
+
+    footer .logo {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* --------- Login ---------- */
+    .titulo-cadastro {
+      text-align: center;
+      font-size: 36px;
+      font-weight: bold;
+      margin-top: 20px;
+      margin-bottom: 40px;
+      margin: 20px 0px 40px 0px;
+    }
+
+    .container-cadastro {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #f0f0f0;
+      padding: 40px 20px;
+      min-height: calc(100vh - 80px);
+    }
+
+    .conteudo-cadastro {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 375px; /* espaço entre formulário e imagem */
+    }
+
+    .img-cadastro {
+      width: 485px;
+      height: auto;
+      border-radius: 30px;
+    }
+
+    .cadastro form {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 10px;
+      border: 1px solid #d9d9d9;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      width: 500px;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 8px;
+    }
+
+    .cadastro label {
+      position: absolute;
+      left: 16px;
+      top: 12px;
+      font-size: 16px;
+      color: #5f6368;
+      pointer-events: none;
+      transition: all 0.2s ease;
+      background-color: white;
+      padding: 0 4px;
+    }
+
+    .cadastro input {
+      padding: 12px 16px;
+      font-size: 16px;
+      border-radius: 4px;
+      border: 1px solid #dadce0;
+      color: #202124;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+      background-color: transparent;
+    }
+
+    .cadastro input:focus {
+      border-color: #56C596;
+      box-shadow: 0 1px 2px rgba(26, 115, 232, 0.3);
+    }
+
+    .cadastro input:focus + label,
+    .cadastro input:not(:placeholder-shown) + label {
+      top: -8px;
+      font-size: 12px;
+      color: #56C596;
+    }
+
+    .cadastro input::placeholder {
+      color: transparent;
+    }
+
+    .botao-cadastro {
+      background-color: #5ed3a3;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.3s;
+    }
+
+    .botao-cadastro:hover {
+      background-color: #4bc095;
+    }
+
+    .link-login {
+      font-size: 14px;
+      text-align: left;
+      text-decoration: underline;
+      color: #333;
+      cursor: pointer;
+    }

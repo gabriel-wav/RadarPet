@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<head>
+<html lang="pt-BR">
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pets Perdidos e Achados - Radar Pet</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='pet-perdido.css') }}">
+    <style>
+        .flash-messages{position:fixed;top:20px;right:20px;z-index:1000;width:auto;max-width:400px}.flash-message{padding:15px;margin-bottom:10px;border-radius:8px;font-weight:700;color:#fff;opacity:1;transform:translateX(0);transition:opacity .5s ease,transform .5s ease;box-shadow:0 4px 8px rgba(0,0,0,.1)}.flash-message.fade-out{opacity:0;transform:translateX(20px)}.flash-success{background-color:#28a745}.flash-error{background-color:#dc3545}
+    </style>
+
+</head>
+
+<body>
+
+     {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="flash-message flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    <header class="hero">
+        <nav class="nav">
+            <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='imagens/RadarPet_logo.png') }}" alt="Logo Radar Pet" class="logo"></a>
+            <ul class="nav-links">
+                <li><a href="#">Como funciona</a></li>
+                <li><a href="{{ url_for('pet_perdido') }}">Animais</a></li>
+                 {% if session.user_id %}
+                    <li><a href="{{ url_for('logout') }}" class="btn-outline">Sair</a></li>
+                 {% else %}
+                    <li><a href="{{ url_for('cadastro') }}" class="btn-outline">Cadastre-se</a></li>
+                 {% endif %}
+            </ul>
+        </nav>
+        <div class="hero-content">
+            <h1>Ajude a Encontrar um Pet</h1>   
+            <p>Cada olhar atento faz a diferença.</p>
+            <a href="{{ url_for('anunciar') }}" class="btn-primary">Anunciar pet</a>
+        </div>
+    </header>
+
+    <section class="aviso">
+        <p>Para melhor controle de tráfego, os anuncios de pets encontrados são apagados do nosso sistema após 30 dias.</p>
+    </section>
+
+    <div id="cards-container"></div>
+
+     <footer>
+        <div class="logo">
+            <h1 class="footerTitulo">Radar Pet</h1>
+            <div class="iconsFooter">
+              <img src="{{ url_for('static', filename='imagens/facebook_logo.png') }}" alt="redes sociais">
+              <img src="{{ url_for('static', filename='imagens/linkedin_logo.png') }}" alt="redes sociais">
+              <img src="{{ url_for('static', filename='imagens/youtube_logo.png') }}" alt="redes sociais">
+              <img src="{{ url_for('static', filename='imagens/instagram_logo.png') }}" alt="redes sociais">
+            </div>
+        </div>
+        <div class="anuncios">
+            <div class="anuncie-pet-perdido">
+                <ul>
+                    <li><a href="{{ url_for('anunciar') }}">Anuncie cachorro perdido</a></li>
+                    <li><a href="{{ url_for('anunciar') }}">Anuncie gato perdido</a></li>
+                    <li><a href="{{ url_for('anunciar') }}">Anuncie outros perdido</a></li>
+                </ul>
+            </div>
+            <div class="anuncie-pet-encontrado">
+                <ul>
+                    <li><a href="{{ url_for('anunciar') }}">Anuncie cachorro encontrado</a></li>
+                    <li><a href="{{ url_for('anunciar') }}">Anuncie gato encontrado</a></li>
+                    <li><a href="{{ url_for('anunciar') }}">Anuncie outros encontrado</a></li>
+                </ul>
+            </div>
+            <div class="sobre-nos">
+                <ul>
+                    <li><a href="#">Como funciona</a></li>
+                    <li><a href="#">Perguntas frequentes</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    // Função para criar cards de pets
+    function createPetCard(pet) {
+        const card = document.createElement('div');
+        card.className = 'pet-card';
+        
+        const imageUrl = pet.foto 
+            ? `/static/uploads/${pet.foto}` 
+            : "{{ url_for('static', filename='imagens/default-pet.jpg') }}";
+        
+        card.innerHTML = `
+            <div class="pet-image">
+                <img src="${imageUrl}" alt="${pet.nome}" onerror="this.onerror=null;this.src='{{ url_for('static', filename='imagens/default-pet.jpg') }}';">
+                <div class="pet-status ${pet.situacao.toLowerCase()}">${pet.situacao.toUpperCase()}</div>
+            </div>
+            <div class="pet-info">
+                <h3>${pet.nome}</h3>
+                <p><strong>Local:</strong> ${pet.visto_em}</p> <p><strong>Data:</strong> ${pet.data}</p>
+                <a href="/verpet/${pet.id}" class="btn-ver-mais">Ver mais detalhes</a>
+            </div>
+        `;
+        return card;
+    }
+
+    // Função para carregar pets da API
+    async function loadPets() {
+        try {
+            const response = await fetch('/api/pets');
+            if (!response.ok) throw new Error('Network response was not ok');
+            const pets = await response.json();
+            
+            const container = document.getElementById('cards-container');
+            // GARANTIA: Limpa o container antes de adicionar novos cards
+            container.innerHTML = ''; 
+            
+            if (pets.length === 0) {
+                container.innerHTML = '<p class="no-pets">Nenhum pet cadastrado ainda.</p>';
+                return;
+            }
+            
+            pets.forEach(pet => {
+                const card = createPetCard(pet);
+                container.appendChild(card);
+            });
+            
+        } catch (error) {
+            console.error('Erro ao carregar pets:', error);
+            const container = document.getElementById('cards-container');
+            if(container) {
+                container.innerHTML = '<p class="error">Erro ao carregar pets. Tente novamente.</p>';
+            }
+        }
+    }
+
+    // GARANTIA: Adiciona o evento apenas uma vez para garantir que loadPets() seja chamado apenas uma vez no carregamento da página.
+    document.addEventListener('DOMContentLoaded', loadPets);
+</script>
+
+    <style>
+        #cards-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 40px; max-width: 1200px; margin: 40px auto; }
+        .pet-card { background: white; border-radius: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden; transition: transform 0.3s ease; display: flex; flex-direction: column; }
+        .pet-card:hover { transform: translateY(-5px); }
+        .pet-image { position: relative; width: 100%; height: 200px; }
+        .pet-image img { width: 100%; height: 100%; object-fit: cover; }
+        .pet-status { position: absolute; top: 10px; right: 10px; padding: 5px 10px; border-radius: 20px; font-weight: bold; color: white; font-size: 12px; }
+        .pet-status.perdido { background-color: #ff6b6b; }
+        .pet-status.achado { background-color: #51cf66; }
+        .pet-info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .pet-info h3 { margin: 0 0 10px 0; color: #333; }
+        .pet-info p { margin: 5px 0; font-size: 14px; color: #666; }
+        .btn-ver-mais { display: inline-block; margin-top: auto; padding: 8px 16px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-size: 14px; transition: background-color 0.3s; text-align: center; }
+        .btn-ver-mais:hover { background-color: #0056b3; }
+        .no-pets, .error { text-align: center; padding: 40px; font-size: 18px; color: #666; grid-column: 1 / -1; }
+        .error { color: #dc3545; }
+    </style>
+
+       <script src="{{ url_for('static', filename='main.js') }}"></script>
+       
+</body>
+</html>

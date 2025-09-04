@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anunciar Pet - Radar Pet</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='anunciar.css') }}">
+</head>
+<body>
+
+  <header>
+     <div class="logo">
+      <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='imagens/RadarPet_logo.png') }}" alt="Radar Pet Logo"></a>
+      <h1>Radar Pet</h1>
+    </div>
+    <nav>
+      <a href="#">Como funciona</a>
+      <a href="{{ url_for('pet_perdido') }}">Ver animais</a>
+      <div class="actions">
+        {% if session.user_id %}
+            <span style="margin-right: 15px; font-weight: bold;">Olá, {{ session.user_name }}!</span>
+            <a href="{{ url_for('logout') }}" class="btn-dark">Sair</a>
+        {% else %}
+            <a href="{{ url_for('cadastro') }}" class="btn-dark">Cadastre-se</a>
+            <a href="{{ url_for('login') }}" class="btn-dark">Login</a>
+        {% endif %}
+      </div>
+    </nav>
+  </header>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-messages">
+        {% for category, message in messages %}
+          <div class="flash-message flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+<section class="site">
+    <div class="criar-anuncio">
+        <h1>Criar anúncio pet</h1>
+        <p>Eles também sentem saudades. Anuncie gratuitamente e ajude seu pet a voltar para quem ama!</p>
+        <img src="{{ url_for('static', filename='imagens/familia com gato.png') }}" alt="Anuncio Pet">
+    </div>
+
+    <div class="formulario">
+        <form method="POST" enctype="multipart/form-data">
+            <h2 class="form-title">🐾 Cadastro de Pet</h2>
+            
+            <div class="form-group">
+                <div class="file-input-wrapper">
+                    <input type="file" id="foto" name="foto" accept="image/*">
+                    <div class="file-input-display" onclick="document.getElementById('foto').click()">
+                        📷 Clique para selecionar uma foto
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <select id="situacao" name="situacao" required>
+                    <option value="" disabled selected></option>
+                    <option value="Perdido">Perdido</option>
+                    <option value="Achado">Encontrado</option>
+                </select>
+                <label for="situacao">Situação</label>
+            </div>
+
+            <div class="form-group">
+                <input type="date" id="data" name="data" required>
+                <label for="data">Data/mês/ano</label>
+            </div>
+
+            <div class="form-group">
+                <input type="text" id="nome_pet" name="nome_pet" required>
+                <label for="nome_pet">Nome do pet</label>
+            </div>
+            
+            <div class="form-group">
+                <select id="especie" name="especie" required>
+                    <option value="" disabled selected></option>
+                    <option value="Cachorro">Cachorro</option>
+                    <option value="Gato">Gato</option>
+                    <option value="Outros">Outros</option>
+                </select>
+                <label for="especie">Espécie</label>
+            </div>
+
+            <div class="form-group">
+                <select id="sexo" name="sexo" required>
+                    <option value="" disabled selected></option>
+                    <option value="Macho">Macho</option>
+                    <option value="Fêmea">Fêmea</option>
+                </select>
+                <label for="sexo">Sexo</label>
+            </div>
+
+            <div class="form-group">
+                <input type="text" id="raca" name="raca">
+                <label for="raca">Raça (Pitbull, Labrador...)</label>
+            </div>
+
+            <div class="form-group">
+                <textarea id="descricao" name="descricao" required></textarea>
+                <label for="descricao">Descrição do pet</label>
+            </div>
+
+            <div class="form-group">
+                <textarea id="mensagem_dono" name="mensagem_dono"></textarea>
+                <label for="mensagem_dono">Mensagem do dono</label>
+            </div>
+            
+            <div class="form-group">
+                <input type="text" id="nome_tutor" name="nome_tutor" required>
+                <label for="nome_tutor">Nome do tutor</label>
+            </div>
+
+            <div class="form-group">
+                <input type="text" id="visto_em" name="visto_em" required>
+                <label for="visto_em">Localização (Ex: Bairro, Cidade)</label>
+            </div>
+
+            <div class="form-group">
+                <input type="tel" id="telefone_tutor" name="telefone_tutor" required>
+                <label for="telefone_tutor">Telefone</label>
+            </div>
+
+            <button type="submit" class="submit-button">Criar Anúncio</button>
+        </form>
+    </div>
+</section>
+
+  <footer>
+        </footer>
+    
+<script>
+    // --- SCRIPT 1: ATUALIZAR NOME DO ARQUIVO ---
+    // Adiciona um 'listener' ao input de arquivo para detectar quando um arquivo é escolhido
+    document.getElementById('foto').addEventListener('change', function(e) {
+        const display = document.querySelector('.file-input-display');
+        
+        // Verifica se um arquivo foi selecionado
+        if (e.target.files.length > 0) {
+            // Mostra o nome do arquivo no display customizado
+            display.textContent = `📷 ${e.target.files[0].name}`;
+            display.classList.add('has-file');
+        } else {
+            // Se nenhum arquivo for selecionado, volta ao texto original
+            display.textContent = '📷 Clique para selecionar uma foto';
+            display.classList.remove('has-file');
+        }
+    });
+
+    // --- SCRIPT 2: PREVENIR CLIQUE DUPLO NO ENVIO ---
+    // Encontra o formulário na página
+    const petForm = document.querySelector('form');
+
+    // Garante que o formulário existe antes de adicionar o 'listener' de submit
+    if (petForm) {
+        petForm.addEventListener('submit', function() {
+            // Encontra o botão de submit dentro do formulário
+            const submitButton = petForm.querySelector('button[type="submit"]');
+
+            // Garante que o botão foi encontrado
+            if (submitButton) {
+                // Desabilita o botão para prevenir cliques duplos
+                submitButton.disabled = true;
+
+                // Muda o texto para dar feedback visual ao usuário
+                submitButton.textContent = 'Enviando...';
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

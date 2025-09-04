@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Ver Pet - {{ pet[1] }}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='verpet.css') }}"> </head>
+<body>
+
+<header>
+    <div class="logo">
+      <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='imagens/RadarPet_logo.png') }}" alt="Radar Pet Logo"></a>
+      <h1>Radar Pet</h1>
+    </div>
+    <nav>
+      <a href="#">Como funciona</a>
+      <a href="{{ url_for('pet_perdido') }}">Ver animais</a>
+      <div class="actions">
+        {% if session.user_id %}
+            <span style="margin-right: 15px; font-weight: bold;">Olá, {{ session.user_name }}!</span>
+            <a href="{{ url_for('logout') }}" class="btn-dark">Sair</a>
+        {% else %}
+            <a href="{{ url_for('cadastro') }}" class="btn-dark">Cadastre-se</a>
+            <a href="{{ url_for('login') }}" class="btn-dark">Login</a>
+        {% endif %}
+      </div>
+    </nav>
+</header>
+
+<div class="container">
+<div class="pet-info-img">
+    <div class="status {{ pet[4].lower() }}">{{ pet[4] | upper }}</div>
+    
+    {% if pet[5] %}
+        <img src="{{ url_for('static', filename='uploads/' + pet[5]) }}" alt="{{ pet[1] }}">
+    {% else %}
+        <div class="placeholder-image">
+            <p>Imagem não disponível</p>
+        </div>
+        {% endif %}
+    
+    <a href="https://wa.me/{{ pet[11] }}?text=Olá! Vi o anúncio de {{ pet[1] }} no Radar Pet e acho que posso ajudar." target="_blank" class="recognize-btn">Reconhece esse pet? Entre em contato</a>
+</div>
+
+    <div class="pet-details">
+      <h2>{{ pet[1] }}, visto em {{ pet[12] }}</h2>
+      
+      <label>Sexo</label>
+      <input type="text" value="{{ pet[7] }}" readonly>
+
+      <label>Espécie</label>
+      <input type="text" value="{{ pet[2] }}" readonly>
+
+      <label>Raça</label>
+      <input type="text" value="{{ pet[3] or 'Não informada' }}" readonly>
+
+      <label>Descrição</label>
+      <textarea readonly>{{ pet[8] }}</textarea>
+
+      <label>Nome do tutor responsável</label>
+      <input type="text" value="{{ pet[10] }}" readonly>
+
+      <label>Contato do tutor responsável</label>
+      <input type="text" value="{{ pet[11] }}" readonly>
+
+      <label>Mensagem</label>
+      <textarea readonly>{{ pet[9] or 'Nenhuma mensagem adicional.' }}</textarea>
+
+      <label>Visto em (Localização)</label>
+      <input type="text" value="{{ pet[12] }}" readonly>
+
+      <label>Data</label>
+      <input type="text" value="{{ pet[6].strftime('%d/%m/%Y') }}" readonly>
+    </div>
+</div>
+
+<footer>
+    <div class="logo">
+        <h1 class="footerTitulo">Radar Pet</h1>
+        <div class="iconsFooter">
+          <img src="{{ url_for('static', filename='imagens/facebook_logo.png') }}" alt="redes sociais">
+          <img src="{{ url_for('static', filename='imagens/linkedin_logo.png') }}" alt="redes sociais">
+          <img src="{{ url_for('static', filename='imagens/youtube_logo.png') }}" alt="redes sociais">
+          <img src="{{ url_for('static', filename='imagens/instagram_logo.png') }}" alt="redes sociais">
+        </div>
+    </div>
+    <div class="anuncios">
+        <div class="anuncie-pet-perdido">
+            <ul>
+                <li><a href="{{ url_for('anunciar') }}">Anuncie cachorro perdido</a></li>
+                <li><a href="{{ url_for('anunciar') }}">Anuncie gato perdido</a></li>
+                <li><a href="{{ url_for('anunciar') }}">Anuncie outros perdido</a></li>
+            </ul>
+        </div>
+        <div class="anuncie-pet-encontrado">
+            <ul>
+                <li><a href="{{ url_for('anunciar') }}">Anuncie cachorro encontrado</a></li>
+                <li><a href="{{ url_for('anunciar') }}">Anuncie gato encontrado</a></li>
+                <li><a href="{{ url_for('anunciar') }}">Anuncie outros encontrado</a></li>
+            </ul>
+        </div>
+        <div class="sobre-nos">
+            <ul>
+                <li><a href="#">Como funciona</a></li>
+                <li><a href="#">Perguntas frequentes</a></li>
+            </ul>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
