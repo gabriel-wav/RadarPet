@@ -5,7 +5,6 @@ def get_db_connection():
     """Estabelece conexão com o banco de dados PostgreSQL."""
     try:
         conn = psycopg2.connect(Config.DB_CONNECTION_STRING)
-        print("✅ Conexão com PostgreSQL estabelecida com sucesso!")
         return conn
     except psycopg2.OperationalError as e:
         print(f"❌ Erro ao conectar com o PostgreSQL: {e}")
@@ -15,7 +14,7 @@ def get_db_connection():
         return None
 
 def init_db():
-    """Inicializa o banco de dados e cria as tabelas se não existirem."""
+    """Inicializa o banco de dados e cria/atualiza as tabelas necessárias."""
     print("🚀 Inicializando banco de dados PostgreSQL...")
     conn = get_db_connection()
     if not conn:
@@ -25,7 +24,6 @@ def init_db():
     try:
         cursor = conn.cursor()
         
-        # --- Criar Tabela 'usuario' ---
         print("📝 Verificando e criando tabela 'usuario'...")
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS usuario (
@@ -33,11 +31,22 @@ def init_db():
                 nome            VARCHAR(255) NOT NULL,
                 sobrenome       VARCHAR(255) NOT NULL,
                 e_mail          VARCHAR(100) NOT NULL UNIQUE,
-                telefone        VARCHAR(20) NOT NULL
+                telefone        VARCHAR(20) NOT NULL,
+                is_admin        BOOLEAN DEFAULT FALSE
             );
         """)
+
+        # Adiciona a coluna is_admin se ela não existir (para bancos de dados antigos)
+        cursor.execute("""
+            DO $$
+            BEGIN
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                               WHERE table_name='usuario' AND column_name='is_admin') THEN
+                    ALTER TABLE usuario ADD COLUMN is_admin BOOLEAN DEFAULT FALSE;
+                END IF;
+            END$$;
+        """)
         
-        # --- Criar Tabela 'pet' ---
         print("📝 Verificando e criando tabela 'pet'...")
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS pet (
@@ -55,7 +64,18 @@ def init_db():
                 telefone_tutor      VARCHAR(20) NOT NULL,
                 visto_em            VARCHAR(255) NOT NULL,
                 id_usuario          INTEGER NOT NULL,
-                FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario)
+                FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario) ON DELETE CASCADE
+            );
+        """)
+        
+        print("📝 Verificando e criando tabela 'denuncia'...")
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS denuncia (
+                id_denuncia     INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+                id_pet          INTEGER NOT NULL REFERENCES pet(id_pet) ON DELETE CASCADE,
+                id_usuario      INTEGER NOT NULL REFERENCES usuario(id_usuario) ON DELETE CASCADE,
+                motivo          TEXT NOT NULL,
+                data_denuncia   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
             );
         """)
         
@@ -68,10 +88,9 @@ def init_db():
     except Exception as e:
         print(f"❌ Erro ao inicializar tabelas: {e}")
         if conn:
-            conn.rollback() # Desfaz a transação em caso de erro
+            conn.rollback()
             conn.close()
         return False
 
 if __name__ == "__main__":
-    print("🧪 Executando inicialização do banco de dados a partir do script...")
     init_db()

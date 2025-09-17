@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Administração - Radar Pet</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            min-height: 60vh;
+        }
+
+        .admin-title {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .denuncia-table {
+            width: 100%;
+            border-collapse: collapse;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .denuncia-table th,
+        .denuncia-table td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .denuncia-table th {
+            background-color: #E5ECF4;
+            font-weight: bold;
+        }
+
+        .denuncia-table tr:nth-of-type(even) {
+            background-color: #f9f9f9;
+        }
+
+        .pet-thumb {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 50%;
+            vertical-align: middle;
+        }
+
+        .btn-delete {
+            background-color: #FF8B94;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .no-denuncias {
+            text-align: center;
+            font-size: 1.2em;
+            color: #666;
+            padding: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='imagens/RadarPet_logo.png') }}"
+                    alt="Radar Pet Logo"></a>
+            <h1>Radar Pet</h1>
+        </div>
+        <nav>
+            <a href="{{ url_for('pet_perdido') }}">Ver animais</a>
+            <div class="actions">
+                {% if session.user_id %}
+                <span style="margin-right: 15px; font-weight: bold;">Olá, {{ session.user_name }}!</span>
+
+                {# --- ESTA É A LÓGICA DE ADMINISTRAÇÃO --- #}
+                {# O botão só será renderizado se 'is_admin' for verdadeiro na sessão #}
+                {% if session.is_admin %}
+                <a href="{{ url_for('admin_panel') }}" class="btn-admin">Admin</a>
+                {% endif %}
+
+                <a href="{{ url_for('logout') }}" class="btn-dark">Sair</a>
+                {% else %}
+                <a href="{{ url_for('cadastro') }}" class="btn-dark">Cadastre-se</a>
+                <a href="{{ url_for('login') }}" class="btn-dark">Login</a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="flash-message flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <main class="admin-container">
+        <h1 class="admin-title">Painel de Moderação de Denúncias</h1>
+
+        {% if denuncias %}
+        <table class="denuncia-table">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Pet (ID)</th>
+                    <th>Imagem</th>
+                    <th>Motivo da Denúncia</th>
+                    <th>Denunciado por</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for denuncia in denuncias %}
+                <tr>
+                    <td>{{ denuncia.data_denuncia.strftime('%d/%m/%Y %H:%M') }}</td>
+                    <td><a href="{{ url_for('ver_pet', pet_id=denuncia.id_pet) }}" target="_blank">{{ denuncia.pet_nome
+                            }} ({{ denuncia.id_pet }})</a></td>
+                    <td>
+                        {% if denuncia.foto %}
+                        <img src="{{ url_for('static', filename='uploads/' + denuncia.foto) }}"
+                            alt="{{ denuncia.pet_nome }}" class="pet-thumb">
+                        {% else %}
+                        <span>Sem Foto</span>
+                        {% endif %}
+                    </td>
+                    <td style="word-break: break-word;">{{ denuncia.motivo }}</td>
+                    <td>{{ denuncia.usuario_email }}</td>
+                    <td>
+                        <form action="{{ url_for('deletar_pet', pet_id=denuncia.id_pet) }}" method="POST"
+                            onsubmit="return confirm('Tem certeza que deseja deletar este anúncio? Esta ação não pode ser desfeita.');">
+                            <button type="submit" class="btn-delete">Deletar Anúncio</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="no-denuncias">Nenhuma denúncia para revisar no momento. ✅</p>
+        {% endif %}
+    </main>
+
+    <footer>
+    </footer>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+
+</body>
+
+</html>

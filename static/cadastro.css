@@ -266,3 +266,17 @@
       color: #333;
       cursor: pointer;
     }
+
+    /* Adicione este estilo para o botão de admin */
+.actions .btn-admin {
+  background-color: #FF8B94; /* Coral Suave para Destaque */
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  margin-left: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: none;
+}

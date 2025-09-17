@@ -1,35 +1,50 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cadastro - Radar Pet</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='cadastro.css') }}">
 </head>
+
 <body>
   <header>
     <div class="logo">
-      <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='imagens/RadarPet_logo.png') }}" alt="Radar Pet Logo"></a>
+      <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='imagens/RadarPet_logo.png') }}"
+          alt="Radar Pet Logo"></a>
       <h1>Radar Pet</h1>
     </div>
     <nav>
       <a href="#">Como funciona</a>
       <a href="{{ url_for('pet_perdido') }}">Ver animais</a>
       <div class="actions">
+        {% if session.user_id %}
+        <span style="margin-right: 15px; font-weight: bold;">Olá, {{ session.user_name }}!</span>
+
+        {# --- ESTA É A LÓGICA DE ADMINISTRAÇÃO --- #}
+        {# O botão só será renderizado se 'is_admin' for verdadeiro na sessão #}
+        {% if session.is_admin %}
+        <a href="{{ url_for('admin_panel') }}" class="btn-admin">Admin</a>
+        {% endif %}
+
+        <a href="{{ url_for('logout') }}" class="btn-dark">Sair</a>
+        {% else %}
         <a href="{{ url_for('cadastro') }}" class="btn-dark">Cadastre-se</a>
-        <a href="{{ url_for('anunciar') }}" class="btn-dark">Anunciar pet perdido</a>
+        <a href="{{ url_for('login') }}" class="btn-dark">Login</a>
+        {% endif %}
       </div>
     </nav>
   </header>
 
   {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div class="flash-messages">
-        {% for category, message in messages %}
-          <div class="flash-message flash-{{ category }}">{{ message }}</div>
-        {% endfor %}
-      </div>
-    {% endif %}
+  {% if messages %}
+  <div class="flash-messages">
+    {% for category, message in messages %}
+    <div class="flash-message flash-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
   {% endwith %}
 
   <div class="container-cadastro">
@@ -39,7 +54,8 @@
     </h1>
 
     <div class="conteudo-cadastro">
-      <img class="img-cadastro" src="{{ url_for('static', filename='imagens/gato_cadastro.png') }}" alt="Gato arranhando caixas de papelão" />
+      <img class="img-cadastro" src="{{ url_for('static', filename='imagens/gato_cadastro.png') }}"
+        alt="Gato arranhando caixas de papelão" />
       <section class="cadastro">
         <form method="POST">
           <div class="input-group">
@@ -69,43 +85,65 @@
 
   <footer>
     <div class="logo">
-        <h1 class="footerTitulo">Radar Pet</h1>
-        <div class="iconsFooter">
-          <img src="{{ url_for('static', filename='imagens/facebook_logo.png') }}" alt="redes sociais">
-          <img src="{{ url_for('static', filename='imagens/linkedin_logo.png') }}" alt="redes sociais">
-          <img src="{{ url_for('static', filename='imagens/youtube_logo.png') }}" alt="redes sociais">
-          <img src="{{ url_for('static', filename='imagens/instagram_logo.png') }}" alt="redes sociais">
-        </div>
+      <h1 class="footerTitulo">Radar Pet</h1>
+      <div class="iconsFooter">
+        <img src="{{ url_for('static', filename='imagens/facebook_logo.png') }}" alt="redes sociais">
+        <img src="{{ url_for('static', filename='imagens/linkedin_logo.png') }}" alt="redes sociais">
+        <img src="{{ url_for('static', filename='imagens/youtube_logo.png') }}" alt="redes sociais">
+        <img src="{{ url_for('static', filename='imagens/instagram_logo.png') }}" alt="redes sociais">
+      </div>
     </div>
     <div class="anuncios">
-        <div class="anuncie-pet-perdido">
-            <ul>
-                <li><a href="{{ url_for('anunciar') }}">Anuncie cachorro perdido</a></li>
-                <li><a href="{{ url_for('anunciar') }}">Anuncie gato perdido</a></li>
-                <li><a href="{{ url_for('anunciar') }}">Anuncie outros perdido</a></li>
-            </ul>
-        </div>
-        <div class="anuncie-pet-encontrado">
-            <ul>
-                <li><a href="{{ url_for('anunciar') }}">Anuncie cachorro encontrado</a></li>
-                <li><a href="{{ url_for('anunciar') }}">Anuncie gato encontrado</a></li>
-                <li><a href="{{ url_for('anunciar') }}">Anuncie outros encontrado</a></li>
-            </ul>
-        </div>
-        <div class="sobre-nos">
-            <ul>
-                <li><a href="#">Como funciona</a></li>
-                <li><a href="#">Perguntas frequentes</a></li>
-            </ul>
-        </div>
+      <div class="anuncie-pet-perdido">
+        <ul>
+          <li><a href="{{ url_for('anunciar') }}">Anuncie cachorro perdido</a></li>
+          <li><a href="{{ url_for('anunciar') }}">Anuncie gato perdido</a></li>
+          <li><a href="{{ url_for('anunciar') }}">Anuncie outros perdido</a></li>
+        </ul>
+      </div>
+      <div class="anuncie-pet-encontrado">
+        <ul>
+          <li><a href="{{ url_for('anunciar') }}">Anuncie cachorro encontrado</a></li>
+          <li><a href="{{ url_for('anunciar') }}">Anuncie gato encontrado</a></li>
+          <li><a href="{{ url_for('anunciar') }}">Anuncie outros encontrado</a></li>
+        </ul>
+      </div>
+      <div class="sobre-nos">
+        <ul>
+          <li><a href="#">Como funciona</a></li>
+          <li><a href="#">Perguntas frequentes</a></li>
+        </ul>
+      </div>
     </div>
   </footer>
 
   <style>
-      .flash-messages { position: fixed; top: 20px; right: 20px; z-index: 1000; }
-      .flash-message { padding: 15px; margin-bottom: 10px; border-radius: 5px; font-weight: bold; }
-      .flash-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-      .flash-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    .flash-messages {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+
+    .flash-message {
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+
+    .flash-success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .flash-error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
   </style>
 </body>
+
 </html>

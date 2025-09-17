@@ -357,3 +357,17 @@ footer .logo {
     opacity: 0;
     transform: translateX(20px); /* Desliza 20px para a direita ao sumir */
 }
+
+/* Adicione este estilo para o botão de admin */
+.actions .btn-admin {
+  background-color: #FF8B94; /* Coral Suave para Destaque */
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  margin-left: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: none;
+}

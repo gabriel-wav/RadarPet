@@ -1,32 +1,35 @@
 from database import get_db_connection
+from psycopg2.extras import RealDictCursor # Facilita o trabalho com os resultados como se fossem dicionários
 
 class Usuario:
-    def __init__(self, nome, sobrenome, email, telefone):
+    # CORREÇÃO: O construtor agora aceita 'e_mail' para corresponder à coluna do banco de dados.
+    def __init__(self, nome, sobrenome, e_mail, telefone, id_usuario=None, is_admin=False):
+        self.id_usuario = id_usuario
         self.nome = nome
         self.sobrenome = sobrenome
-        self.email = email
+        self.email = e_mail  # O nome interno do atributo pode ser 'email'
         self.telefone = telefone
+        self.is_admin = is_admin
     
     def salvar(self):
         conn = get_db_connection()
         if conn:
             try:
                 cursor = conn.cursor()
+                # A coluna no banco é 'e_mail'
                 sql_query = """
                     INSERT INTO usuario (nome, sobrenome, e_mail, telefone)
-                    VALUES (%s, %s, %s, %s)
-                    RETURNING id_usuario
+                    VALUES (%s, %s, %s, %s) RETURNING id_usuario
                 """
                 cursor.execute(sql_query, (self.nome, self.sobrenome, self.email, self.telefone))
-                result = cursor.fetchone()
-                user_id = int(result[0]) if result else None
+                user_id = cursor.fetchone()[0]
                 conn.commit()
+                cursor.close()
                 conn.close()
                 return user_id
             except Exception as e:
                 print(f"Erro ao salvar usuário: {e}")
-                conn.rollback() 
-                conn.close()
+                if conn: conn.close()
                 return None
         return None
     
@@ -35,22 +38,27 @@ class Usuario:
         conn = get_db_connection()
         if conn:
             try:
-                cursor = conn.cursor()
+                cursor = conn.cursor(cursor_factory=RealDictCursor)
+                # A busca é feita na coluna 'e_mail'
                 cursor.execute("SELECT * FROM usuario WHERE e_mail = %s", (email,))
-                user = cursor.fetchone()
+                user_data = cursor.fetchone()
+                cursor.close()
                 conn.close()
-                return user
+                if user_data:
+                    # Retorna um objeto Usuario, que agora aceita 'e_mail'
+                    return Usuario(**user_data)
+                return None
             except Exception as e:
                 print(f"Erro ao buscar usuário: {e}")
-                conn.close()
+                if conn: conn.close()
                 return None
         return None
 
 class Pet:
-    # __init__ foi mantido como no original
     def __init__(self, nome, especie, raca, situacao, foto, data, sexo, 
                  descricao, mensagem_dono, nome_tutor, telefone_tutor, 
-                 visto_em, id_usuario):
+                 visto_em, id_usuario, id_pet=None):
+        self.id_pet = id_pet
         self.nome = nome
         self.especie = especie
         self.raca = raca
@@ -70,7 +78,6 @@ class Pet:
         if conn:
             try:
                 cursor = conn.cursor()
-                
                 sql_query = """
                     INSERT INTO pet (nome, especie, raca, situacao, foto, data, sexo, 
                                    descricao, mensagem_dono, nome_tutor, telefone_tutor, 
@@ -78,24 +85,19 @@ class Pet:
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     RETURNING id_pet
                 """
-
                 params = (self.nome, self.especie, self.raca, self.situacao, self.foto, 
                           self.data, self.sexo, self.descricao,
                           self.mensagem_dono, self.nome_tutor, self.telefone_tutor, 
                           self.visto_em, self.id_usuario)
-
                 cursor.execute(sql_query, params)
-                
-                result = cursor.fetchone()
-                pet_id = int(result[0]) if result else None
-
+                pet_id = cursor.fetchone()[0]
                 conn.commit()
+                cursor.close()
                 conn.close()
                 return pet_id
             except Exception as e:
                 print(f"Erro ao salvar pet: {e}")
-                conn.rollback()
-                conn.close()
+                if conn: conn.close()
                 return None
         return None
     
@@ -104,21 +106,20 @@ class Pet:
         conn = get_db_connection()
         if conn:
             try:
-                cursor = conn.cursor()
+                cursor = conn.cursor(cursor_factory=RealDictCursor)
                 cursor.execute("""
-                    SELECT DISTINCT p.id_pet, p.nome, p.especie, p.raca, p.situacao, p.foto, p.data, 
-                                    p.sexo, p.descricao, p.mensagem_dono, p.nome_tutor, 
-                                    p.telefone_tutor, p.visto_em, p.id_usuario, u.nome AS nome_usuario, u.e_mail
+                    SELECT p.*, u.nome AS nome_usuario
                     FROM pet p 
                     JOIN usuario u ON p.id_usuario = u.id_usuario
                     ORDER BY p.data DESC
                 """)
                 pets = cursor.fetchall()
+                cursor.close()
                 conn.close()
                 return pets
             except Exception as e:
                 print(f"Erro ao listar pets: {e}")
-                conn.close()
+                if conn: conn.close()
                 return []
         return []
     
@@ -127,18 +128,92 @@ class Pet:
         conn = get_db_connection()
         if conn:
             try:
-                cursor = conn.cursor()
+                cursor = conn.cursor(cursor_factory=RealDictCursor)
                 cursor.execute("""
-                    SELECT p.*, u.nome AS nome_usuario, u.sobrenome, u.e_mail 
+                    SELECT p.*, u.nome AS nome_usuario
                     FROM pet p 
                     JOIN usuario u ON p.id_usuario = u.id_usuario
                     WHERE p.id_pet = %s
                 """, (pet_id,))
                 pet = cursor.fetchone()
+                cursor.close()
                 conn.close()
                 return pet
             except Exception as e:
                 print(f"Erro ao buscar pet: {e}")
-                conn.close()
+                if conn: conn.close()
                 return None
         return None
+
+    @staticmethod
+    def deletar_por_id(pet_id):
+        conn = get_db_connection()
+        if conn:
+            try:
+                cursor = conn.cursor()
+                cursor.execute("DELETE FROM pet WHERE id_pet = %s", (pet_id,))
+                conn.commit()
+                cursor.close()
+                conn.close()
+                return True
+            except Exception as e:
+                print(f"Erro ao deletar pet: {e}")
+                if conn: conn.close()
+                return False
+        return False
+
+class Denuncia:
+    def __init__(self, id_pet, id_usuario, motivo, id_denuncia=None, data_denuncia=None):
+        self.id_denuncia = id_denuncia
+        self.id_pet = id_pet
+        self.id_usuario = id_usuario
+        self.motivo = motivo
+        self.data_denuncia = data_denuncia
+
+    def salvar(self):
+        conn = get_db_connection()
+        if conn:
+            try:
+                cursor = conn.cursor()
+                sql_query = """
+                    INSERT INTO denuncia (id_pet, id_usuario, motivo)
+                    VALUES (%s, %s, %s) RETURNING id_denuncia
+                """
+                cursor.execute(sql_query, (self.id_pet, self.id_usuario, self.motivo))
+                denuncia_id = cursor.fetchone()[0]
+                conn.commit()
+                cursor.close()
+                conn.close()
+                return denuncia_id
+            except Exception as e:
+                print(f"Erro ao salvar denúncia: {e}")
+                if conn: conn.close()
+                return None
+        return None
+
+    @staticmethod
+    def listar_todas():
+        conn = get_db_connection()
+        if conn:
+            try:
+                cursor = conn.cursor(cursor_factory=RealDictCursor)
+                sql_query = """
+                    SELECT 
+                        d.id_denuncia, d.motivo, d.data_denuncia,
+                        p.id_pet, p.nome AS pet_nome, p.foto,
+                        u.id_usuario, u.e_mail AS usuario_email
+                    FROM denuncia d
+                    JOIN pet p ON d.id_pet = p.id_pet
+                    JOIN usuario u ON d.id_usuario = u.id_usuario
+                    ORDER BY d.data_denuncia DESC
+                """
+                cursor.execute(sql_query)
+                denuncias = cursor.fetchall()
+                cursor.close()
+                conn.close()
+                return denuncias
+            except Exception as e:
+                print(f"Erro ao listar denúncias: {e}")
+                if conn: conn.close()
+                return []
+        return []

@@ -1,33 +1,57 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radar Pet - Sua rede de ajuda animal</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
-    
-    <style>
-        .flash-messages { position: fixed; top: 20px; right: 20px; z-index: 1000; width: auto; max-width: 400px; }
-        .flash-message { padding: 15px; margin-bottom: 10px; border-radius: 5px; font-weight: bold; color: white; opacity: 0.9; }
-        .flash-success { background-color: #28a745; }
-        .flash-error { background-color: #dc3545; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Radar Pet - Sua rede de ajuda animal</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+
+  <style>
+    .flash-messages {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      width: auto;
+      max-width: 400px;
+    }
+
+    .flash-message {
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      font-weight: bold;
+      color: white;
+      opacity: 0.9;
+    }
+
+    .flash-success {
+      background-color: #28a745;
+    }
+
+    .flash-error {
+      background-color: #dc3545;
+    }
+  </style>
 </head>
+
 <body>
 
   {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div class="flash-messages">
-        {% for category, message in messages %}
-          <div class="flash-message flash-{{ category }}">{{ message }}</div>
-        {% endfor %}
-      </div>
-    {% endif %}
+  {% if messages %}
+  <div class="flash-messages">
+    {% for category, message in messages %}
+    <div class="flash-message flash-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
   {% endwith %}
 
   <header>
     <div class="logo">
-      <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='imagens/RadarPet_logo.png') }}" alt="Radar Pet Logo"></a>
+      <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='imagens/RadarPet_logo.png') }}"
+          alt="Radar Pet Logo"></a>
       <h1>Radar Pet</h1>
     </div>
     <nav>
@@ -35,11 +59,18 @@
       <a href="{{ url_for('pet_perdido') }}">Ver animais</a>
       <div class="actions">
         {% if session.user_id %}
-            <span style="margin-right: 15px; font-weight: bold;">Olá, {{ session.user_name }}!</span>
-            <a href="{{ url_for('logout') }}" class="btn-dark">Sair</a>
+        <span style="margin-right: 15px; font-weight: bold;">Olá, {{ session.user_name }}!</span>
+
+        {# --- ESTA É A LÓGICA DE ADMINISTRAÇÃO --- #}
+        {# O botão só será renderizado se 'is_admin' for verdadeiro na sessão #}
+        {% if session.is_admin %}
+        <a href="{{ url_for('admin_panel') }}" class="btn-admin">Admin</a>
+        {% endif %}
+
+        <a href="{{ url_for('logout') }}" class="btn-dark">Sair</a>
         {% else %}
-            <a href="{{ url_for('cadastro') }}" class="btn-dark">Cadastre-se</a>
-            <a href="{{ url_for('login') }}" class="btn-dark">Login</a>
+        <a href="{{ url_for('cadastro') }}" class="btn-dark">Cadastre-se</a>
+        <a href="{{ url_for('login') }}" class="btn-dark">Login</a>
         {% endif %}
       </div>
     </nav>
@@ -72,76 +103,80 @@
 
   <section class="finais-felizes">
     <div class="titulo">
-        <h2>Finais Felizes</h2>
+      <h2>Finais Felizes</h2>
     </div>
     <div class="cards">
       <div class="card-luna">
-          <img src="{{ url_for('static', filename='imagens/luna.png') }}" alt="Cachorra Luna">
-          <h2>Luna</h2>
-          <p>"Luna se assustou com os fogos de artifício e escapou pelo portão. Graças ao Radar Pet, encontramos uma pessoa que a viu e conseguimos trazê-la de volta para casa sã e salva!"</p>
+        <img src="{{ url_for('static', filename='imagens/luna.png') }}" alt="Cachorra Luna">
+        <h2>Luna</h2>
+        <p>"Luna se assustou com os fogos de artifício e escapou pelo portão. Graças ao Radar Pet, encontramos uma
+          pessoa que a viu e conseguimos trazê-la de volta para casa sã e salva!"</p>
       </div>
       <div class="card-milo">
-          <img src="{{ url_for('static', filename='imagens/milo.png') }}" alt="Gato Milo">
-          <h2>Milo</h2>
-          <p>"Milo adora explorar, mas dessa vez se perdeu e não conseguia voltar. Uma vizinha cadastrou ele no Radar Pet, e conseguimos nos reencontrar poucas horas depois. Muito gratos!"</p>
+        <img src="{{ url_for('static', filename='imagens/milo.png') }}" alt="Gato Milo">
+        <h2>Milo</h2>
+        <p>"Milo adora explorar, mas dessa vez se perdeu e não conseguia voltar. Uma vizinha cadastrou ele no Radar Pet,
+          e conseguimos nos reencontrar poucas horas depois. Muito gratos!"</p>
       </div>
       <div class="card-thor">
-          <img src="{{ url_for('static', filename='imagens/thor.png') }}" alt="Cachorro Thor">
-          <h2>Thor</h2>
-          <p>"Thor fugiu enquanto passeávamos no parque. Estávamos desesperados, mas uma boa alma usou o Radar Pet para nos avisar onde ele estava. Agora ele está em casa, feliz e seguro!"</p>
+        <img src="{{ url_for('static', filename='imagens/thor.png') }}" alt="Cachorro Thor">
+        <h2>Thor</h2>
+        <p>"Thor fugiu enquanto passeávamos no parque. Estávamos desesperados, mas uma boa alma usou o Radar Pet para
+          nos avisar onde ele estava. Agora ele está em casa, feliz e seguro!"</p>
       </div>
     </div>
   </section>
-    
+
   <footer>
     <div class="logo">
-        <h1 class="footerTitulo">Radar Pet</h1>
-        <div class="iconsFooter">
-          <img src="{{ url_for('static', filename='imagens/facebook_logo.png') }}" alt="redes sociais">
-          <img src="{{ url_for('static', filename='imagens/linkedin_logo.png') }}" alt="redes sociais">
-          <img src="{{ url_for('static', filename='imagens/youtube_logo.png') }}" alt="redes sociais">
-          <img src="{{ url_for('static', filename='imagens/instagram_logo.png') }}" alt="redes sociais">
-        </div>
+      <h1 class="footerTitulo">Radar Pet</h1>
+      <div class="iconsFooter">
+        <img src="{{ url_for('static', filename='imagens/facebook_logo.png') }}" alt="redes sociais">
+        <img src="{{ url_for('static', filename='imagens/linkedin_logo.png') }}" alt="redes sociais">
+        <img src="{{ url_for('static', filename='imagens/youtube_logo.png') }}" alt="redes sociais">
+        <img src="{{ url_for('static', filename='imagens/instagram_logo.png') }}" alt="redes sociais">
+      </div>
     </div>
     <div class="anuncios">
-        <div class="anuncie-pet-perdido">
-            <ul>
-                <li><a href="{{ url_for('anunciar') }}">Anuncie cachorro perdido</a></li>
-                <li><a href="{{ url_for('anunciar') }}">Anuncie gato perdido</a></li>
-                <li><a href="{{ url_for('anunciar') }}">Anuncie outros perdido</a></li>
-            </ul>
-        </div>
-        <div class="anuncie-pet-encontrado">
-            <ul>
-                <li><a href="{{ url_for('anunciar') }}">Anuncie cachorro encontrado</a></li>
-                <li><a href="{{ url_for('anunciar') }}">Anuncie gato encontrado</a></li>
-                <li><a href="{{ url_for('anunciar') }}">Anuncie outros encontrado</a></li>
-            </ul>
-        </div>
-        <div class="sobre-nos">
-            <ul>
-                <li><a href="#">Como funciona</a></li>
-                <li><a href="#">Perguntas frequentes</a></li>
-            </ul>
-        </div>
+      <div class="anuncie-pet-perdido">
+        <ul>
+          <li><a href="{{ url_for('anunciar') }}">Anuncie cachorro perdido</a></li>
+          <li><a href="{{ url_for('anunciar') }}">Anuncie gato perdido</a></li>
+          <li><a href="{{ url_for('anunciar') }}">Anuncie outros perdido</a></li>
+        </ul>
+      </div>
+      <div class="anuncie-pet-encontrado">
+        <ul>
+          <li><a href="{{ url_for('anunciar') }}">Anuncie cachorro encontrado</a></li>
+          <li><a href="{{ url_for('anunciar') }}">Anuncie gato encontrado</a></li>
+          <li><a href="{{ url_for('anunciar') }}">Anuncie outros encontrado</a></li>
+        </ul>
+      </div>
+      <div class="sobre-nos">
+        <ul>
+          <li><a href="#">Como funciona</a></li>
+          <li><a href="#">Perguntas frequentes</a></li>
+        </ul>
+      </div>
     </div>
   </footer>
 
-      <script>
-        (function() {
-            const flashMessages = document.querySelectorAll('.flash-message');
-            if (flashMessages.length > 0) {
-                const displayTime = 5000;
-                setTimeout(() => {
-                    flashMessages.forEach(msg => {
-                        msg.style.opacity = '0';
-                        setTimeout(() => {
-                            msg.style.display = 'none';
-                        }, 500);
-                    });
-                }, displayTime);
-            }
-        })();
-    </script>
+  <script>
+    (function () {
+      const flashMessages = document.querySelectorAll('.flash-message');
+      if (flashMessages.length > 0) {
+        const displayTime = 5000;
+        setTimeout(() => {
+          flashMessages.forEach(msg => {
+            msg.style.opacity = '0';
+            setTimeout(() => {
+              msg.style.display = 'none';
+            }, 500);
+          });
+        }, displayTime);
+      }
+    })();
+  </script>
 </body>
+
 </html>
