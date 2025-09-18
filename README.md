@@ -1,55 +1,69 @@
 # Radar Pet 🐾
 
-![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
-![License](https://img.shields.io/badge/license-MIT-blue)
+![Status do Projeto](https://img.shields.io/badge/status-ativo-brightgreen)
+![Versão do Python](https://img.shields.io/badge/python-3.8+-blue.svg)
+![Framework](https://img.shields.io/badge/framework-Flask-black.svg)
+![Licença](https://img.shields.io/badge/license-MIT-lightgrey)
 
-**Plataforma web para centralização de anúncios de animais perdidos e achados.**
+**Uma plataforma web full-stack para ajudar a comunidade a encontrar animais de estimação perdidos e reuní-los com suas famílias.**
 
-[Acesse a Aplicação Online](https://link-para-seu-deploy.com) &nbsp;&nbsp;•&nbsp;&nbsp; [Reportar um Bug](https://github.com/gabriel-wav/RadarPet/issues)
+### ➡️ **[Acesse a Aplicação Online](https://radarpet.onrender.com)** ⬅️
 
-Uma plataforma completa desenvolvida para ajudar a comunidade a reencontrar seus pets. O projeto conecta pessoas de forma rápida e eficiente, centralizando informações e promovendo o reencontro de animais com suas famílias.
+O Radar Pet foi desenvolvido como uma solução completa para o problema comum de animais perdidos. A plataforma permite que usuários se cadastrem, publiquem anúncios detalhados de pets perdidos ou encontrados e gerenciem seus posts, tudo isso com um sistema de moderação para garantir um ambiente seguro.
 
-![Demonstração do RadarPet](caminho/para/seu/gif_ou_screenshot.png)
+![Vídeo de Demonstração do RadarPet](https://caminho/para/seu/gif_ou_video.mp4)
+
+---
+
+## 📋 Tabela de Conteúdos
+
+* [Funcionalidades Principais](#-funcionalidades-principais)
+* [Stack de Tecnologias](#️-stack-de-tecnologias)
+* [Rodando o Projeto Localmente](#-rodando-o-projeto-localmente)
+* [Administração do Sistema](#-administração-do-sistema)
+* [Estrutura do Projeto](#-estrutura-do-projeto)
+* [Roadmap (Próximos Passos)](#-roadmap)
+
+---
 
 ## ✨ Funcionalidades Principais
 
-* **Autenticação de Usuários:** Sistema completo de cadastro e login para gerenciamento seguro dos anúncios.
-* **Gestão de Anúncios:** Formulário detalhado para anunciar pets, permitindo incluir espécie, raça, localização e fotos.
-* **Galeria de Pets:** Painel principal com todos os anúncios em formato de cartões para visualização rápida e eficiente.
-* **Página de Detalhes:** Visualização completa de cada anúncio, com todas as informações e a foto do pet em destaque.
-* **Notificações Dinâmicas:** Feedback visual instantâneo para ações do usuário (sucesso, erro), melhorando a experiência de uso.
-* **Design Responsivo:** Interface adaptável para uma experiência consistente em desktops e dispositivos móveis.
+* **Autenticação Completa:** Sistema de cadastro e login de usuários para gerenciamento de conteúdo.
+* **Criação de Anúncios:** Formulários detalhados para pets perdidos ou encontrados, com upload de imagens e informações essenciais.
+* **Galeria Dinâmica:** Uma página principal que exibe todos os anúncios, carregados de forma assíncrona via API.
+* **Sistema de Moderação (Admin):**
+    * **Painel de Administrador:** Rota protegida onde apenas administradores podem visualizar e gerenciar denúncias.
+    * **Sistema de Denúncias:** Usuários podem denunciar anúncios por conteúdo impróprio.
+    * **Gestão de Conteúdo:** Administradores podem deletar anúncios que violam os termos de uso.
+* **Design Responsivo:** Interface adaptável para uma experiência de usuário consistente em desktops e dispositivos móveis.
 
-## 🛠️ Tecnologias Utilizadas
+## 🛠️ Stack de Tecnologias
 
-O projeto foi construído utilizando as seguintes tecnologias:
+O projeto foi construído com um stack moderno e robusto, separando claramente as responsabilidades.
 
 * **Backend:**
-    * Python 3
-    * Flask
+    * **Linguagem:** Python 3
+    * **Framework:** Flask
+    * **Servidor de Produção:** Gunicorn
 * **Frontend:**
-    * HTML5
-    * CSS3
-    * JavaScript
+    * HTML5, CSS3, JavaScript
 * **Banco de Dados:**
-    * Microsoft SQL Server
-    * `pyodbc` (Driver de Conexão)
-* **Infraestrutura e DevOps:**
-    * `python-dotenv` (Gerenciamento de Variáveis de Ambiente)
-    * Git & GitHub
+    * PostgreSQL
+    * **Driver:** `psycopg2`
+* **Infraestrutura & Deploy:**
+    * **Plataforma:** Render
+    * **Gerenciamento de Ambiente:** `python-dotenv`
 
 ---
 
 ## 🚀 Rodando o Projeto Localmente
 
-Siga os passos abaixo para configurar e executar o projeto em seu ambiente de desenvolvimento.
+Siga os passos abaixo para configurar e executar o projeto em seu ambiente.
 
 ### Pré-requisitos
-
 * Python 3.8+
 * Git
-* Microsoft SQL Server (qualquer edição)
-* [Microsoft ODBC Driver for SQL Server](https://learn.microsoft.com/pt-br/sql/connect/odbc/download-odbc-driver-for-sql-server)
+* PostgreSQL
 
 ### Guia de Instalação
 
@@ -61,12 +75,9 @@ Siga os passos abaixo para configurar e executar o projeto em seu ambiente de de
 
 2.  **Crie e Ative um Ambiente Virtual:**
     ```bash
-    # Criar venv
     python -m venv venv
-    # Ativar no Windows
+    # Windows
     .\venv\Scripts\activate
-    # Ativar no macOS/Linux
-    source venv/bin/activate
     ```
 
 3.  **Instale as Dependências:**
@@ -74,20 +85,18 @@ Siga os passos abaixo para configurar e executar o projeto em seu ambiente de de
     pip install -r requirements.txt
     ```
 
-4.  **Configure as Variáveis de Ambiente:**
-    Crie um arquivo `.env` na raiz do projeto e preencha com suas credenciais do banco de dados, usando um dos exemplos abaixo como base.
-
-    *Exemplo para Autenticação do Windows:*
+4.  **Configure as Variáveis de Ambiente (`.env`):**
+    Crie um arquivo `.env` na raiz do projeto e configure suas credenciais do PostgreSQL local.
     ```ini
-    DB_SERVER=NOME-PC\SQLEXPRESS
+    DB_USER=seu_usuario_postgres
+    DB_PASSWORD=sua_senha
+    DB_HOST=localhost
+    DB_PORT=5432
     DB_DATABASE=radar_pet
-    DB_USERNAME=
-    DB_PASSWORD=
-    USE_WINDOWS_AUTH=true
     ```
 
 5.  **Inicialize o Banco de Dados:**
-    Este comando criará o banco `radar_pet` e suas tabelas.
+    Este comando criará o banco `radar_pet` e todas as tabelas necessárias.
     ```bash
     python database.py
     ```
@@ -96,31 +105,78 @@ Siga os passos abaixo para configurar e executar o projeto em seu ambiente de de
     ```bash
     flask run
     ```
+    Acesse: [http://1227.0.0.1:5000](http://127.0.0.1:5000)
 
-7.  **Acesse no Navegador:**
-    [http://127.0.0.1:5000](http://127.0.0.1:5000)
+---
+
+## 🔑 Administração do Sistema
+
+### Tornando um Usuário Administrador
+
+O sistema não possui uma interface para criar administradores por segurança. A operação é feita diretamente no banco de dados.
+
+1.  **Cadastre-se** na aplicação web normalmente.
+2.  **Conecte-se** ao seu banco de dados PostgreSQL usando uma ferramenta como DBeaver ou pgAdmin.
+3.  **Execute o seguinte comando SQL**, substituindo pelo e-mail do usuário que deseja promover:
+    ```sql
+    UPDATE usuario
+    SET is_admin = TRUE
+    WHERE e_mail = 'seu-email-de-admin@email.com';
+    ```
+
+### Acessando o Painel de Admin
+
+Após um usuário ser definido como administrador no banco, ele precisa atualizar sua sessão para que as novas permissões sejam reconhecidas.
+
+1.  Se o usuário estiver logado, ele deve primeiro **fazer logout**.
+2.  Em seguida, **fazer login novamente**.
+
+Após o novo login, um botão **"Admin"** aparecerá no cabeçalho, dando acesso ao painel de moderação.
 
 ---
 
 ## 📂 Estrutura do Projeto
 
-A estrutura de pastas foi organizada da seguinte forma para manter o código limpo e escalável:
+A estrutura de pastas foi organizada para promover a separação de responsabilidades e a manutenibilidade.
 
 ```
 radar-pet/
 ├── static/
-│   ├── ... (outros css de página)
-│   ├── main.js
-│   ├── imagens/(imagens do site)
-│   └── uploads/ (imagens enviadas pelos usuarios)
+│   ├── css/
+│   │   ├── anunciar.css
+│   │   ├── cadastro.css
+│   │   ├── denuncia.css
+│   │   ├── index.css
+│   │   ├── login.css
+│   │   ├── pet-perdido.css
+│   │   └── verpet.css
+│   ├── imagens/
+│   ├── js/
+│   │   └── main.js
+│   └── uploads/
 ├── templates/
-│   ├── layout.html
-│   ├── index.html
-│   └── ... (outros html)
-├── app.py
-├── models.py
-├── database.py
-├── config.py
+│   ├── admin.html
+│   ├── anunciar.html
+│   ├── cadastro.html
+│   ├── denuncia.html
+│   ├── index.html
+│   ├── login.html
+│   ├── pet-perdido.html
+│   └── verpet.html
 ├── .env
+├── app.py
+├── config.py
+├── database.py
+├── models.py
+├── Procfile
 └── requirements.txt
 ```
+
+## 🗺️ Roadmap
+
+Este projeto está em desenvolvimento ativo. Os próximos passos planejados incluem:
+
+* [ ] Implementar busca por filtros (espécie, raça, localização).
+* [ ] Adicionar um sistema de comentários nos anúncios.
+* [ ] Integrar uma API de geolocalização para exibir um mapa.
+* [ ] Implementar a moderação proativa de imagens com uma API de IA (Google Cloud Vision).
